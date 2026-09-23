@@ -1,0 +1,48 @@
+STREAMING_CHUNK:Configuring GitHub Actions workflow metadata...
+
+name: Build AutoNex Android APK
+
+on:
+push:
+branches: [ main, master ]
+workflow_dispatch:
+
+jobs:
+build:
+name: Build Android Release APK
+runs-on: ubuntu-latest
+
+steps:
+  # STREAMING_CHUNK:Checking out repository source code...
+  - name: Checkout repository
+    uses: actions/checkout@v3
+
+  # STREAMING_CHUNK:Setting up Java Development Kit (JDK)...
+  - name: Set up Java JDK 17
+    uses: actions/setup-java@v3
+    with:
+      distribution: 'temurin'
+      java-version: '17'
+
+  # STREAMING_CHUNK:Installing Flutter SDK...
+  - name: Set up Flutter SDK
+    uses: subosito/flutter-action@v2
+    with:
+      flutter-version: '3.19.x'
+      channel: 'stable'
+      cache: true
+
+  # STREAMING_CHUNK:Fetching Flutter dependencies...
+  - name: Install dependencies
+    run: flutter pub get
+
+  # STREAMING_CHUNK:Compiling Flutter application to Android APK...
+  - name: Build Android APK
+    run: flutter build apk --release --no-tree-shake-icons
+
+  # STREAMING_CHUNK:Uploading generated APK binary as artifact...
+  - name: Upload Release APK
+    uses: actions/upload-artifact@v3
+    with:
+      name: AutoNex-Android-APK
+      path: build/app/outputs/flutter-apk/app-release.apk
